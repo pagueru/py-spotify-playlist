@@ -1,0 +1,13 @@
+# Configuração do logger
+logger:
+  file:
+    enabled: true
+    level: "DEBUG"
+    path: "logs/app.log"
+  console:
+    level: "INFO"
+  suppress:
+    - "pandas only supports SQLAlchemy connectable"
+
+serveo:
+  domain: "py-spotify-playlist:80:localhost:8888"
