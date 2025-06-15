@@ -1,0 +1,13 @@
+body {
+    background-color: #101524;
+    color: #f2ddcc;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding-top: 60px;
+}
+
+a {
+    color: #f2ddcc;
+    text-decoration: underline;
+    font-weight: bold;
+}

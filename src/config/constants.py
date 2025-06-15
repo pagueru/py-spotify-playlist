@@ -17,3 +17,9 @@ SETTINGS_FILE: Path = Path("./src/config/files/settings.yaml")
 
 BRT: ZoneInfo = ZoneInfo("America/Sao_Paulo")
 """Define o objeto de fuso horário para o horário de Brasília:  `America/Sao_Paulo`"""
+
+REQUIRED_ENV: list[str] = ["SPOTIPY_CLIENT_ID", "SPOTIPY_CLIENT_SECRET", "SPOTIPY_REDIRECT_URI"]
+"""Lista de variáveis de ambiente obrigatórias para autenticação no Spotify."""
+
+APP_TEMPLATE = "app.html"
+"""Nome do template da aplicação: `app.html`"""

@@ -20,49 +20,48 @@ class ServeoTunnelManager(BaseClass):
     def __init__(self, return_handler: ReturnHandler) -> None:
         """Inicializa o gerenciador do túnel com logger e handler."""
         self.logger: Logger = LoggerSingleton.logger or LoggerSingleton.get_logger()
-        """Logger singleton para registrar eventos e erros."""
-
-        self.settings = SettingsManager(settings=SETTINGS_FILE)
-        """Instância do SettingsManager para acessar configurações do projeto."""
-
-        self.serveo_domain: str = self.settings["serveo"]["domain"]
-        """Domínio configurado para o túnel Serveo."""
-
+        self.logger.info("Inicializando com ReturnHandler.")
+        self.settings = SettingsManager()
+        self.serveo_domain: str = self.settings.settings["serveo"]["domain"]
+        self.logger.info(f"Domínio Serveo configurado: {self.serveo_domain}")
         self.handler = return_handler
-        """Instância do ReturnHandler para gerenciar mensagens de retorno."""
-
         self.ssh_command = [
             r"C:\Windows\System32\OpenSSH\ssh.exe",
             "-R",
             f"{self.serveo_domain}",
             "serveo.net",
         ]
-        """Comando SSH para iniciar o túnel Serveo."""
+        self.logger.info(f"Comando SSH configurado: {self.ssh_command}")
 
     def start_tunnel(self) -> subprocess.Popen:
         """Inicia o túnel SSH Serveo em background."""
+        self.logger.info("Iniciando túnel SSH Serveo.")
         try:
+            self.logger.info(f"Executando comando: {self.ssh_command}")
             ssh_tunnel_process = subprocess.Popen(
                 self.ssh_command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stdout=sys.stdout,
+                stderr=sys.stderr,
             )
-            self.logger.info("Túnel SSH Serveo iniciado com sucesso.")
         except FileNotFoundError:
+            self.logger.exception("Executável SSH não encontrado.")
             self.handler.exception(
                 message="Executável SSH não encontrado.",
                 exception=FileNotFoundError,
             )
         except OSError:
+            self.logger.exception("Erro ao iniciar túnel SSH Serveo.")
             self.handler.exception(
                 message="Erro ao iniciar túnel SSH Serveo.",
                 exception=OSError,
             )
         else:
+            self.logger.info(f"Túnel iniciado com PID: {ssh_tunnel_process.pid}")
             return ssh_tunnel_process
 
     def stop_tunnel(self, proc: subprocess.Popen) -> None:
         """Encerra o processo do túnel SSH Serveo."""
+        self.logger.info(f"Encerrando túnel Serveo (PID: {proc.pid})...")
         if proc.poll() is None:
             proc.terminate()
             try:
@@ -71,3 +70,5 @@ class ServeoTunnelManager(BaseClass):
             except subprocess.TimeoutExpired:
                 proc.kill()
                 self.logger.warning("Forçou encerramento do túnel SSH Serveo após timeout.")
+        else:
+            self.logger.info(f"Processo já finalizado (PID: {proc.pid}).")
